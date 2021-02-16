@@ -4,7 +4,7 @@ from typing import Iterable, Tuple
 import torch
 from transformers import BertTokenizer
 
-from qa_utils.lightning.datasets import PairwiseTrainDatasetBase, PointwiseTrainDatasetBase, ValTestDatasetBase
+from ranking_utils.lightning.datasets import PairwiseTrainDatasetBase, PointwiseTrainDatasetBase, ValTestDatasetBase
 
 
 Input = Tuple[str, str]

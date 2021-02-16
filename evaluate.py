@@ -7,8 +7,8 @@ from pathlib import Path
 import torch
 import numpy as np
 
-from qa_utils.util import read_output_files, write_trec_eval_file
-from qa_utils.metrics import average_precision, reciprocal_rank
+from ranking_utils.util import read_output_files, write_trec_eval_file
+from ranking_utils.metrics import average_precision, reciprocal_rank
 
 
 def main():

@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Tuple
 import torch
 from transformers import BertModel, AdamW, get_constant_schedule_with_warmup
 
-from qa_utils.lightning.base_ranker import BaseRanker
+from ranking_utils.lightning.base_ranker import BaseRanker
 
 from models.datasets import PointwiseTrainDataset, PairwiseTrainDataset, ValTestDataset, Batch
 

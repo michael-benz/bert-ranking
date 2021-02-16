@@ -6,10 +6,10 @@ from pathlib import Path
 
 from pytorch_lightning import seed_everything
 
-from qa_utils.datasets.antique import ANTIQUE
-from qa_utils.datasets.fiqa import FiQA
-from qa_utils.datasets.insuranceqa import InsuranceQA
-from qa_utils.datasets.msmarco import MSMARCO
+from ranking_utils.datasets.antique import ANTIQUE
+from ranking_utils.datasets.fiqa import FiQA
+from ranking_utils.datasets.insuranceqa import InsuranceQA
+from ranking_utils.datasets.msmarco import MSMARCO
 
 
 def main():
