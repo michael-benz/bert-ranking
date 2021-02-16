@@ -17,19 +17,20 @@ Clone this repository using `git clone --recursive` to get the submodule.
 The following datasets are currently supported:
 * [ANTIQUE](https://ciir.cs.umass.edu/downloads/Antique/)
 * [FiQA Task 2](https://sites.google.com/view/fiqa/home)
-* [MS MARCO Passage Ranking](https://microsoft.github.io/TREC-2019-Deep-Learning/)
 * [InsuranceQA V2](https://github.com/shuzi/insuranceQA)
+* [TREC-DL 2019 Passage Ranking](https://microsoft.github.io/msmarco/TREC-Deep-Learning-2019)
 
 ### Preprocessing
 First, preprocess your dataset:
 ```
-usage: preprocess.py [-h] [--num_negatives NUM_NEGATIVES] [--pw_num_negatives PW_NUM_NEGATIVES] [--pw_query_limit PW_QUERY_LIMIT]
+usage: preprocess.py [-h] [--num_negatives NUM_NEGATIVES]
+                     [--pw_num_negatives PW_NUM_NEGATIVES] [--pw_query_limit PW_QUERY_LIMIT]
                      [--random_seed RANDOM_SEED]
-                     SAVE {antique,fiqa,insuranceqa,msmarco} ...
+                     SAVE {antique,fiqa,insuranceqa,trecdl2019passage} ...
 
 positional arguments:
   SAVE                  Where to save the results
-  {antique,fiqa,insuranceqa,msmarco}
+  {antique,fiqa,insuranceqa,trecdl2019passage}
                         Choose a dataset
 
 optional arguments:
@@ -39,7 +40,8 @@ optional arguments:
   --pw_num_negatives PW_NUM_NEGATIVES
                         Number of negatives per positive (pairwise training) (default: 16)
   --pw_query_limit PW_QUERY_LIMIT
-                        Maximum number of training examples per query (pairwise training) (default: 64)
+                        Maximum number of training examples per query (pairwise training)
+                        (default: 64)
   --random_seed RANDOM_SEED
                         Random seed (default: 123)
 ```
@@ -47,17 +49,24 @@ optional arguments:
 ### Training and Evaluation
 Use the training script to train a new model and save checkpoints:
 ```
-usage: train.py [-h] [--accumulate_grad_batches ACCUMULATE_GRAD_BATCHES] [--max_epochs MAX_EPOCHS] [--gpus GPUS [GPUS ...]]
-                [--val_check_interval VAL_CHECK_INTERVAL] [--save_top_k SAVE_TOP_K] [--limit_val_batches LIMIT_VAL_BATCHES]
-                [--limit_train_batches LIMIT_TRAIN_BATCHES] [--limit_test_batches LIMIT_TEST_BATCHES] [--precision {16,32}]
-                [--accelerator ACCELERATOR] [--bert_type BERT_TYPE] [--bert_dim BERT_DIM] [--dropout DROPOUT] [--lr LR]
-                [--loss_margin LOSS_MARGIN] [--batch_size BATCH_SIZE] [--warmup_steps WARMUP_STEPS]
-                [--training_mode {pointwise,pairwise}] [--rr_k RR_K] [--num_workers NUM_WORKERS] [--val_patience VAL_PATIENCE]
-                [--save_dir SAVE_DIR] [--random_seed RANDOM_SEED] [--load_weights LOAD_WEIGHTS] [--test]
-                DATA_DIR
+usage: train.py [-h] [--accumulate_grad_batches ACCUMULATE_GRAD_BATCHES]
+                [--max_epochs MAX_EPOCHS] [--gpus GPUS [GPUS ...]]
+                [--val_check_interval VAL_CHECK_INTERVAL] [--save_top_k SAVE_TOP_K]
+                [--limit_val_batches LIMIT_VAL_BATCHES]
+                [--limit_train_batches LIMIT_TRAIN_BATCHES]
+                [--limit_test_batches LIMIT_TEST_BATCHES] [--precision {16,32}]
+                [--accelerator ACCELERATOR] [--bert_type BERT_TYPE] [--bert_dim BERT_DIM]
+                [--dropout DROPOUT] [--lr LR] [--loss_margin LOSS_MARGIN]
+                [--batch_size BATCH_SIZE] [--warmup_steps WARMUP_STEPS]
+                [--training_mode {pointwise,pairwise}] [--rr_k RR_K]
+                [--num_workers NUM_WORKERS] [--val_patience VAL_PATIENCE]
+                [--save_dir SAVE_DIR] [--random_seed RANDOM_SEED]
+                [--load_weights LOAD_WEIGHTS] [--test]
+                DATA_DIR FOLD_NAME
 
 positional arguments:
   DATA_DIR              Folder with all preprocessed files
+  FOLD_NAME             Name of the fold (within DATA_DIR)
 
 optional arguments:
   -h, --help            show this help message and exit
