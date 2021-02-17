@@ -57,7 +57,7 @@ usage: train.py [-h] [--accumulate_grad_batches ACCUMULATE_GRAD_BATCHES]
                 [--limit_test_batches LIMIT_TEST_BATCHES] [--precision {16,32}]
                 [--accelerator ACCELERATOR] [--bert_type BERT_TYPE] [--bert_dim BERT_DIM]
                 [--dropout DROPOUT] [--lr LR] [--loss_margin LOSS_MARGIN]
-                [--batch_size BATCH_SIZE] [--warmup_steps WARMUP_STEPS]
+                [--batch_size BATCH_SIZE] [--warmup_steps WARMUP_STEPS] [--freeze_bert]
                 [--training_mode {pointwise,pairwise}] [--rr_k RR_K]
                 [--num_workers NUM_WORKERS] [--val_patience VAL_PATIENCE]
                 [--save_dir SAVE_DIR] [--random_seed RANDOM_SEED]
@@ -100,6 +100,8 @@ optional arguments:
                         Batch size (default: 32)
   --warmup_steps WARMUP_STEPS
                         Number of warmup steps (default: 1000)
+  --freeze_bert         Do not update any weights of BERT (only train the classification
+                        layer) (default: False)
   --training_mode {pointwise,pairwise}
                         Training mode (default: pairwise)
   --rr_k RR_K           Compute MRR@k (validation) (default: 10)

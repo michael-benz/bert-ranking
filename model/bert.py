@@ -6,7 +6,7 @@ from transformers import BertModel, AdamW, get_constant_schedule_with_warmup
 
 from ranking_utils.lightning.base_ranker import BaseRanker
 
-from models.datasets import PointwiseTrainDataset, PairwiseTrainDataset, ValTestDataset, Batch
+from model.datasets import PointwiseTrainDataset, PairwiseTrainDataset, ValTestDataset, Batch
 
 
 class BertRanker(BaseRanker):
@@ -37,6 +37,10 @@ class BertRanker(BaseRanker):
         self.dropout = torch.nn.Dropout(hparams['dropout'])
         self.classification = torch.nn.Linear(hparams['bert_dim'], 1)
 
+        for p in self.bert.parameters():
+            p.requires_grad = not hparams['freeze_bert']
+
+
     def forward(self, batch: Batch) -> torch.Tensor:
         """Compute the relevance scores for a batch.
 
@@ -55,7 +59,8 @@ class BertRanker(BaseRanker):
         Returns:
             Tuple[List[Any], List[Any]]: The optimizer and scheduler
         """
-        opt = AdamW(self.parameters(), lr=self.hparams['lr'])
+        params_with_grad = filter(lambda p: p.requires_grad, self.parameters())
+        opt = AdamW(params_with_grad, lr=self.hparams['lr'])
         sched = get_constant_schedule_with_warmup(opt, self.hparams['warmup_steps'])
         return [opt], [{'scheduler': sched, 'interval': 'step'}]
 
@@ -73,6 +78,7 @@ class BertRanker(BaseRanker):
         ap.add_argument('--loss_margin', type=float, default=0.2, help='Margin for pairwise loss')
         ap.add_argument('--batch_size', type=int, default=32, help='Batch size')
         ap.add_argument('--warmup_steps', type=int, default=1000, help='Number of warmup steps')
+        ap.add_argument('--freeze_bert', action='store_true', help='Do not update any weights of BERT (only train the classification layer)')
         ap.add_argument('--training_mode', choices=['pointwise', 'pairwise'], default='pairwise', help='Training mode')
         ap.add_argument('--rr_k', type=int, default=10, help='Compute MRR@k (validation)')
         ap.add_argument('--num_workers', type=int, default=16, help='Number of DataLoader workers')

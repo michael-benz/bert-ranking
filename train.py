@@ -9,7 +9,7 @@ import torch
 from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import LearningRateMonitor, EarlyStopping, ModelCheckpoint
 
-from models.bert import BertRanker
+from model.bert import BertRanker
 
 
 def main():
