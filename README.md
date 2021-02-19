@@ -24,26 +24,29 @@ The following datasets are currently supported:
 First, preprocess your dataset:
 ```
 usage: preprocess.py [-h] [--num_negatives NUM_NEGATIVES]
-                     [--pw_num_negatives PW_NUM_NEGATIVES] [--pw_query_limit PW_QUERY_LIMIT]
-                     [--random_seed RANDOM_SEED]
-                     SAVE {antique,fiqa,insuranceqa,trecdl2019passage} ...
+                     [--pw_num_negatives PW_NUM_NEGATIVES]
+                     [--pw_query_limit PW_QUERY_LIMIT] [--random_seed RANDOM_SEED]
+                     SAVE
+                     {antique,fiqa,insuranceqa,trecdl2019passage,trecdl2019document,trec}
+                     ...
 
 positional arguments:
   SAVE                  Where to save the results
-  {antique,fiqa,insuranceqa,trecdl2019passage}
+  {antique,fiqa,insuranceqa,trecdl2019passage,trecdl2019document,trec}
                         Choose a dataset
 
 optional arguments:
   -h, --help            show this help message and exit
   --num_negatives NUM_NEGATIVES
-                        Number of negatives per positive (pointwise training) (default: 1)
+                        Number of negatives per positive (pointwise training)
+                        (default: 1)
   --pw_num_negatives PW_NUM_NEGATIVES
-                        Number of negatives per positive (pairwise training) (default: 16)
+                        Number of negatives per positive (pairwise training)
+                        (default: 16)
   --pw_query_limit PW_QUERY_LIMIT
-                        Maximum number of training examples per query (pairwise training)
-                        (default: 64)
+                        Maximum number of training examples per query (pairwise
+                        training) (default: 64)
   --random_seed RANDOM_SEED
-                        Random seed (default: 123)
 ```
 
 ### Training and Evaluation
