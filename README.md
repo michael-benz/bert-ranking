@@ -18,7 +18,8 @@ The following datasets are currently supported:
 * [ANTIQUE](https://ciir.cs.umass.edu/downloads/Antique/)
 * [FiQA Task 2](https://sites.google.com/view/fiqa/home)
 * [InsuranceQA V2](https://github.com/shuzi/insuranceQA)
-* [TREC-DL 2019 Passage Ranking](https://microsoft.github.io/msmarco/TREC-Deep-Learning-2019)
+* [TREC-DL 2019](https://microsoft.github.io/msmarco/TREC-Deep-Learning-2019)
+* Any dataset in generic TREC format
 
 ### Preprocessing
 First, preprocess your dataset:
