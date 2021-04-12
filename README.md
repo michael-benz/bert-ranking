@@ -120,4 +120,25 @@ optional arguments:
                         Load pre-trained weights before training (default: None)
   --test                Test the model after training (default: False)
 ```
-Use the `--test` argument to run the model on the testset using the best checkpoint after training.
+Use the `--test` argument to run the model on the testset using the best checkpoint after training. This will create output files (one per GPU) in your `save_dir`. You can then use `evaluate.py` to create a TREC runfile that can be evaluated with the TREC evaluation tool.
+
+### Re-Ranking
+You can also use a trained model to re-rank any existing TREC runfile:
+```
+usage: re_rank.py [-h] [--out_file OUT_FILE] [--batch_size BATCH_SIZE] [--num_workers NUM_WORKERS]
+                  DATA_FILE CHECKPOINT RUNFILE
+
+positional arguments:
+  DATA_FILE             Preprocessed file containing queries and documents
+  CHECKPOINT            Model checkpoint
+  RUNFILE               Runfile to re-rank (TREC format)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --out_file OUT_FILE   Output TREC runfile (default: result.tsv)
+  --batch_size BATCH_SIZE
+                        Batch size (default: 128)
+  --num_workers NUM_WORKERS
+                        DataLoader workers (default: 16)
+```
+This will again create a new TREC runfile which can be evaluated. __If you use this script, make sure that the query and documents IDs in the data file (created by the pre-processing script) and the runfile match!__
