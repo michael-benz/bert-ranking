@@ -70,7 +70,7 @@ def main():
     ap.add_argument('CHECKPOINT', help='Model checkpoint')
     ap.add_argument('RUNFILE', help='Runfile to re-rank (TREC format)')
     ap.add_argument('--out_file', default='result.tsv', help='Output TREC runfile')
-    ap.add_argument('--batch_size', type=int, default=128, help='Batch size')
+    ap.add_argument('--batch_size', type=int, default=32, help='Batch size')
     ap.add_argument('--num_workers', type=int, default=16, help='DataLoader workers')
     args = ap.parse_args()
 
@@ -78,20 +78,29 @@ def main():
     kwargs = {'data_file': None, 'train_file': None, 'val_file': None, 'test_file': None,
               'training_mode': None, 'rr_k': None, 'num_workers': None, 'freeze_bert': True}
     model = BertRanker.load_from_checkpoint(args.CHECKPOINT, **kwargs)
-    model = DataParallel(model)
-    model.to('cuda:0')
+    hparams = model.hparams
+
+    if torch.cuda.is_available():
+        print('CUDA available')
+        model = DataParallel(model)
+        dev = 'cuda:0'
+    else:
+        print('CUDA unavailable')
+        dev = 'cpu'
+
+    model.to(dev)
     model.eval()
 
     print('creating temporary testset...')
     fd, f = create_temp_testset(args.DATA_FILE, args.RUNFILE)
-    ds = ValTestDataset(args.DATA_FILE, f, model.module.hparams['bert_type'])
+    ds = ValTestDataset(args.DATA_FILE, f, hparams['bert_type'])
     dl = DataLoader(ds, batch_size=args.batch_size, num_workers=args.num_workers, collate_fn=ds.collate_fn)
 
     print('ranking...')
     results = defaultdict(dict)
     for q_ids, doc_ids, inputs, _ in tqdm(dl):
         with torch.no_grad():
-            inputs = [i.to('cuda:0') for i in inputs]
+            inputs = [i.to(dev) for i in inputs]
             outputs = model(inputs)
         for q_id, doc_id, prediction in zip(q_ids, doc_ids, outputs):
             orig_q_id = ds.get_original_query_id(q_id.cpu())
