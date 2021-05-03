@@ -17,12 +17,13 @@ ValTestInput = Tuple[int, int, Input, int]
 ValTestBatch = Tuple[torch.IntTensor, torch.IntTensor, Batch, torch.IntTensor]
 
 
-def _get_single_input(query: str, doc: str) -> Input:
-    """Return a (query, document) pair for BERT, making sure the strings are not empty
+def _get_single_input(query: str, doc: str, char_limit: int = 10000) -> Input:
+    """Return a (query, document) pair for BERT, making sure the strings are not empty and don't exceed a number of characters.
 
     Args:
         query (str): The query
         doc (str): The document
+        char_limit (int, optional): Maximum number of characters. Defaults to 10000.
 
     Returns:
         Input: Non-empty query and document
@@ -32,7 +33,9 @@ def _get_single_input(query: str, doc: str) -> Input:
         query = '(empty)'
     if len(doc.strip()) == 0:
         doc = '(empty)'
-    return query, doc
+
+    # limit characters to avoid tokenization bottlenecks
+    return query[:char_limit], doc[:char_limit]
 
 
 def _collate_bert(inputs: Iterable[Input], tokenizer: BertTokenizer) -> Batch:
