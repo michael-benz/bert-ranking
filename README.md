@@ -2,13 +2,13 @@
 A simple BERT-based ranking model. The score of a query-document-pair is computed from the output corresponding to the CLS token of BERT.
 
 ## Requirements
-This code is tested with Python 3.8.3 and
-* torch==1.7.1
-* transformers==4.0.1
-* pytorch-lightning==1.1.2
+This code is tested with Python 3.8.10 and
+* torch==1.8.1
+* transformers==4.6.0
+* pytorch-lightning==1.3.1
 * h5py==2.10.0
-* numpy==1.18.5
-* tqdm==4.48.0
+* numpy==1.20.1
+* tqdm==4.60.0
 
 ## Cloning
 Clone this repository using `git clone --recursive` to get the submodule.
@@ -62,7 +62,7 @@ usage: train.py [-h] [--accumulate_grad_batches ACCUMULATE_GRAD_BATCHES]
                 [--accelerator ACCELERATOR] [--bert_type BERT_TYPE] [--bert_dim BERT_DIM]
                 [--dropout DROPOUT] [--lr LR] [--loss_margin LOSS_MARGIN]
                 [--batch_size BATCH_SIZE] [--warmup_steps WARMUP_STEPS] [--freeze_bert]
-                [--training_mode {pointwise,pairwise}] [--rr_k RR_K]
+                [--training_mode {pointwise,pairwise}]
                 [--num_workers NUM_WORKERS] [--val_patience VAL_PATIENCE]
                 [--save_dir SAVE_DIR] [--random_seed RANDOM_SEED]
                 [--load_weights LOAD_WEIGHTS] [--test]
@@ -108,7 +108,6 @@ optional arguments:
                         layer) (default: False)
   --training_mode {pointwise,pairwise}
                         Training mode (default: pairwise)
-  --rr_k RR_K           Compute MRR@k (validation) (default: 10)
   --num_workers NUM_WORKERS
                         Number of DataLoader workers (default: 16)
   --val_patience VAL_PATIENCE
@@ -120,7 +119,7 @@ optional arguments:
                         Load pre-trained weights before training (default: None)
   --test                Test the model after training (default: False)
 ```
-Use the `--test` argument to run the model on the testset using the best checkpoint after training. This will create output files (one per GPU) in your `save_dir`. You can then use `evaluate.py` to create a TREC runfile that can be evaluated with the TREC evaluation tool.
+Use the `--test` argument to run the model on the testset using the best checkpoint after training. This will create output files (one per GPU) in your experiment directory. You can then use `evaluate.py` to create a TREC runfile that can be evaluated with the TREC evaluation tool.
 
 ### Re-Ranking
 You can also use a trained model to re-rank any existing TREC runfile:

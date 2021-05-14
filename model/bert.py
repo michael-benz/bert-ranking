@@ -28,10 +28,9 @@ class BertRanker(BaseRanker):
         if hparams.get('test_file') is not None:
             test_ds = ValTestDataset(hparams['data_file'], hparams['test_file'], hparams['bert_type'])
 
-        rr_k = hparams.get('rr_k', 10)
         num_workers = hparams.get('num_workers')
         uses_ddp = 'ddp' in hparams.get('accelerator', '')
-        super().__init__(hparams, train_ds, val_ds, test_ds, hparams['loss_margin'], hparams['batch_size'], rr_k, num_workers, uses_ddp)
+        super().__init__(hparams, train_ds, val_ds, test_ds, hparams['loss_margin'], hparams['batch_size'], num_workers, uses_ddp)
 
         self.bert = BertModel.from_pretrained(hparams['bert_type'], return_dict=True)
         self.dropout = torch.nn.Dropout(hparams['dropout'])
@@ -39,7 +38,6 @@ class BertRanker(BaseRanker):
 
         for p in self.bert.parameters():
             p.requires_grad = not hparams['freeze_bert']
-
 
     def forward(self, batch: Batch) -> torch.Tensor:
         """Compute the relevance scores for a batch.
@@ -80,5 +78,4 @@ class BertRanker(BaseRanker):
         ap.add_argument('--warmup_steps', type=int, default=1000, help='Number of warmup steps')
         ap.add_argument('--freeze_bert', action='store_true', help='Do not update any weights of BERT (only train the classification layer)')
         ap.add_argument('--training_mode', choices=['pointwise', 'pairwise'], default='pairwise', help='Training mode')
-        ap.add_argument('--rr_k', type=int, default=10, help='Compute MRR@k (validation)')
         ap.add_argument('--num_workers', type=int, default=16, help='Number of DataLoader workers')
