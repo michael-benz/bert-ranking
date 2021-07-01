@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Tuple
 
 import torch
 from transformers import BertModel, AdamW, get_constant_schedule_with_warmup
-
+import torch.nn as nn
 from ranking_utils.lightning.base_ranker import BaseRanker
 
 from model.datasets import PointwiseTrainDataset, PairwiseTrainDataset, ValTestDataset, Batch
@@ -38,6 +38,30 @@ class BertRanker(BaseRanker):
 
         for p in self.bert.parameters():
             p.requires_grad = not hparams['freeze_bert']
+        
+        
+        if hparams['reinit_x'] > 0:
+            # Implemented as in the code to "Revisiting Few-Sample BERT Fine-Tuning"
+            # https://github.com/asappresearch/revisit-bert-finetuning/blob/master/run_glue.py
+            # Reinit pooler
+            pooler = self.bert.pooler
+            pooler.dense.weight.data.normal_(mean=0.0, std=self.bert.config.initializer_range)
+            pooler.dense.bias.data.zero_()
+            for p in pooler.parameters():
+                p.requires_grad = True
+            # Reinit layers
+            bert_encoder = self.bert.encoder
+            layers = bert_encoder.layer
+            reinit_layers = layers[-hparams['reinit_x']:]
+            for module in reinit_layers.modules():
+                if isinstance(module, (nn.Linear, nn.Embedding)):
+                    module.weight.data.normal_(mean=0.0, std=bert_encoder.config.initializer_range)
+                elif isinstance(module, nn.LayerNorm):
+                    module.bias.data.zero_()
+                    module.weight.data.fill_(1.0)
+                if isinstance(module, nn.Linear) and module.bias is not None:
+                    module.bias.data.zero_()
+
 
     def forward(self, batch: Batch) -> torch.Tensor:
         """Compute the relevance scores for a batch.
@@ -58,7 +82,7 @@ class BertRanker(BaseRanker):
             Tuple[List[Any], List[Any]]: The optimizer and scheduler
         """
         params_with_grad = filter(lambda p: p.requires_grad, self.parameters())
-        opt = AdamW(params_with_grad, lr=self.hparams['lr'])
+        opt = AdamW(params_with_grad, lr=self.hparams['lr'], correct_bias=self.hparams['correct_bias'])
         sched = get_constant_schedule_with_warmup(opt, self.hparams['warmup_steps'])
         return [opt], [{'scheduler': sched, 'interval': 'step'}]
 
@@ -79,3 +103,5 @@ class BertRanker(BaseRanker):
         ap.add_argument('--freeze_bert', action='store_true', help='Do not update any weights of BERT (only train the classification layer)')
         ap.add_argument('--training_mode', choices=['pointwise', 'pairwise'], default='pairwise', help='Training mode')
         ap.add_argument('--num_workers', type=int, default=16, help='Number of DataLoader workers')
+        ap.add_argument('--reinit_x', type=int, default=0, help='Number of layers to reinitialize')
+        ap.add_argument('--correct_bias', type=bool, default=True, help='Number of layers to reinitialize')
